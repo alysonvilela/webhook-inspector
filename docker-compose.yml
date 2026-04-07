@@ -1,0 +1,55 @@
+services:
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    container_name: ${COMPOSE_PROJECT_NAME:-webhook-inspector}_postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-docker}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-docker}
+      POSTGRES_DB: ${DB_NAME:-webhooks}
+    ports:
+      - "${DB_PORT:-5498}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-docker}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: ${COMPOSE_PROJECT_NAME:-webhook-inspector}_api
+    env_file:
+      - .env
+    environment:
+      - PORT=${BACKEND_PORT:-3333}
+      - DATABASE_URL=${DATABASE_URL}
+    ports:
+      - "${BACKEND_PORT:-3333}:${BACKEND_PORT:-3333}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./api/src:/app/src
+    command: sh -c "bun run db:migrate && bun run dev"
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: ${COMPOSE_PROJECT_NAME:-webhook-inspector}_web
+    env_file:
+      - .env
+    environment:
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:3333}
+    ports:
+      - "${FRONTEND_PORT:-5173}:${FRONTEND_PORT:-5173}"
+    volumes:
+      - ./web/src:/app/src
+    command: bun run dev --host
+
+volumes:
+  postgres_data:
