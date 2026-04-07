@@ -4,8 +4,15 @@ import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [
+export default defineConfig(({ env }) => {
+  const apiUrl = env.VITE_API_URL || ''
+  const allowedHosts = apiUrl ? [new URL(apiUrl).hostname] : []
+
+  return {
+    server: {
+      allowedHosts,
+    },
+    plugins: [
     tanstackRouter({
       target: 'react',
       autoCodeSplitting: true,
