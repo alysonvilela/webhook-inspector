@@ -5,6 +5,7 @@ import { Trash2Icon } from 'lucide-react'
 import { Checkbox } from './ui/checkbox'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
+import { API_BASE_URL } from '../lib/api'
 
 interface WebhookListItemProps {
   webhook: {
@@ -23,7 +24,7 @@ export function WebhooksListItem({ webhook, onWebhookChecked, isWebhookChecked }
 
   const { mutate: deleteWebhook } = useMutation({
     mutationFn: async (id: string) => {
-      await fetch(`http://localhost:3333/api/webhooks/${id}`, {
+      await fetch(`${API_BASE_URL}/api/webhooks/${id}`, {
         method: 'DELETE',
       })
     },

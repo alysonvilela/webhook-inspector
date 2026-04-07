@@ -4,6 +4,7 @@ import { WebhookDetailHeader } from './webhook-detail-header'
 import { SectionTitle } from './section-title'
 import { SectionDataTable } from './section-data-table'
 import { CodeBlock } from './ui/code-block'
+import { API_BASE_URL } from '../lib/api'
 
 interface WebhookDetailsProps {
   id: string
@@ -13,7 +14,7 @@ export function WebhookDetails({ id }: WebhookDetailsProps) {
   const { data } = useSuspenseQuery({
     queryKey: ['webhook', id],
     queryFn: async () => {
-      const response = await fetch(`http://localhost:3333/api/webhooks/${id}`)
+      const response = await fetch(`${API_BASE_URL}/api/webhooks/${id}`)
       const data = await response.json()
 
       return webhookDetailsSchema.parse(data)

@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { CodeBlock } from './ui/code-block'
+import { API_BASE_URL } from '../lib/api'
 
 export function WebhooksList() {
   const loadMoreRef = useRef<HTMLDivElement>(null)
@@ -19,7 +20,7 @@ export function WebhooksList() {
     useSuspenseInfiniteQuery({
       queryKey: ['webhooks'],
       queryFn: async ({ pageParam }) => {
-        const url = new URL('http://localhost:3333/api/webhooks')
+        const url = new URL(`${API_BASE_URL}/api/webhooks`)
 
         if (pageParam) {
           url.searchParams.set('cursor', pageParam)
@@ -78,7 +79,7 @@ export function WebhooksList() {
   }
 
   async function handleGenerateHandler() {
-    const response = await fetch('http://localhost:3333/api/generate', {
+    const response = await fetch(`${API_BASE_URL}/api/generate`, {
       method: 'POST',
       body: JSON.stringify({ webhookIds: checkedWebhooksIds }),
       headers: {
