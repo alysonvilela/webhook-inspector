@@ -44,6 +44,7 @@ services:
             - .env
         environment:
             - VITE_API_URL=${VITE_API_URL:-http://localhost:3333}
+            - VITE_PUBLIC_URL=${VITE_PUBLIC_URL:-http://localhost:5173}
         ports:
             - "${FRONTEND_PORT:-5173}:5173"
         volumes:
